@@ -8,6 +8,7 @@ public class VirtualProgramme
 	private String category;	
 	private Boolean pdStatus;
 	private int quota;
+	private int meritListIndex;
 	private int seatsFilled;
 	private ArrayList<Candidate> waitList;
 	private ArrayList<Candidate> waitListForeign;
@@ -20,6 +21,7 @@ public class VirtualProgramme
 		category = prog.category ;
 		pdStatus = prog.pdStatus ;
 		quota = prog.quota ;
+		meritListIndex = prog.meritListIndex ;
 		seatsFilled = prog.seatsFilled ;
 		waitList = new ArrayList<Candidate>(prog.waitList) ;
 		waitListForeign = new ArrayList<Candidate>(prog.waitListForeign) ;
@@ -32,6 +34,46 @@ public class VirtualProgramme
 		pdStatus = pdStatus_;
 		programID = programID_;
 		instiID = instiID_;
+
+		if(pdStatus == false)
+		{
+			if(category == "GE")
+			{
+				meritListIndex = 0;
+			}
+			if(category == "OBC")
+			{
+				meritListIndex = 1;
+			}
+			if(category == "SC")
+			{
+				meritListIndex = 2;
+			}
+			if(category == "ST")
+			{
+				meritListIndex = 3;
+			}
+		}
+		else
+		{
+			if(category == "GE_PD")
+			{
+				meritListIndex = 4;
+			}
+			if(category == "OBC_PD")
+			{
+				meritListIndex = 5;
+			}
+			if(category == "SC_PD")
+			{
+				meritListIndex = 6;
+			}
+			if(category == "ST_PD")
+			{
+				meritListIndex = 7;
+			}
+		}
+
 		quota = quota_;
 		//list of candidates who have applied for that programme in 1 iteration
 		tempList = new ArrayList<Candidate>();
@@ -54,10 +96,6 @@ public class VirtualProgramme
 		return category ;
 	}
 
-	public int getMeritListIndex(){
-		return meritListIndex;
-	}
-
 	/** @debug: maybe you can pass tempId(string) ,instead of Candidate*/
 	public void receiveApplication(Candidate newCandidate, HashMap<String , Candidate> rejectionList)	
 	{	//check if the candidate is present in the merit list, which is available in gale-shapley class.
@@ -71,23 +109,6 @@ public class VirtualProgramme
 		}
 		//newCandidate.setAppliedUpto(5);
 
-	}
-	//We can implement treeMap too
-	public void SelectionSort ( ArrayList<Candidate> num)
-	{
-	     int i, j, first;
-	     for (i = num.size() - 1; i >= 0; i--)  
-	     { 
-	          first = 0;   //initialize to subscript of first element
-	          for(j = 0; j <= i; j++)   //locate smallest element between positions 0 and i.
-	          {
-	               if( meritList.compareRank(num.get(j), num.get(first),meritListIndex) == 1 )         	//here write the actual name of the hashmap, rank is the 
-	                 first = j;
-	          }
-	          Candidate temp = new Candidate(num.get(first));   //swap smallest found with element in position i.
-	          num.set(first,num.get(i)) ;
-	          num.set(i,temp); 
-	      }
 	}
 
 	public HashMap<String , Candidate> filter(HashMap<String , Candidate> rejectionList)
@@ -152,5 +173,51 @@ public class VirtualProgramme
 
 	public void print_program() {
 		System.out.println(programID + " " + quota + " " + category) ;
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		/**********************************************************Functions for MeritOrder(Specific)******************************************************************/
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+	public Boolean checkApplication(Candidate canndidate){
+		if(quota>0){
+			if(seatsFilled<quota){
+				waitList.add(candidate);
+				seatsFilled++;
+				return true;
+			}
+			else if(waitList.get(waitList.size()-1).getRank(meritListIndex)==candidate.getRank(meritListIndex)){
+				waitList.add(candidate);
+				seatsFilled++;
+				return true;
+			}
+			else
+				return false;
+		}
+		else
+			return false;
+	}
+
+	public void setQuota(int x){
+		quota=x;
+	}
+
+	public int getDiff(){
+		if(seatsFilled<quota){
+			setQuota(seatsFilled);
+			return quota - seatsFilled;
+		}
+		else
+			return 0;
+	}
+
+	public void dereserveSeats(ArrayList<VirtualProgramme> progList){
+		int vacancy=0;
+		for(int i=1;i<progList.size();i++){
+			vacancy += progList.get(i).getDiff();
+		}
+		//there is one doubt, should it be
+		//setQuota(quota+vacancy);
+		setQuota(seatsFilled+vacancy);
 	}
 }

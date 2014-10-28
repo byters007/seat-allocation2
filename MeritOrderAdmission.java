@@ -29,12 +29,23 @@ class MeritOrderAdmission{
 		}
 	}
 	
-	public Candidate getCandidate(String uniqueID){
-		return candidateMap.get(uniqueID);
+	public void printResult(){
+		for (int i=0;i<orderedCandidate.size();i++){
+			if(candidateMap.get(orderedCandidate.get(i)).getAppliedUpto()!=-1){
+				System.out.println(orderedCandidate.get(i) + "," + candidateMap.get(orderedCandidate.get(i)).getWaitListedFor().getProgramID() + "," + candidateMap.get(orderedCandidate.get(i)).getWaitListedFor().getCategory() ); /** @debug : Proper Syntax*/
+			}
+			else{
+				System.out.println(orderedCandidate.get(i) + ",-1");
+			}
+		}
 	}
 
-	public ArrayList<VirtualProgramme> getProgram(String programCode){
-		return programMap.get(programCode);
+	public Candidate getCandidate(Candidate candidate){
+		return candidateMap.get(candidate.getUniqueID());
+	}
+
+	public ArrayList<VirtualProgramme> getProgram(VirtualProgramme program){
+		return programMap.get(program.getProgramID());
 	}
 
 	public void startAlgorithm()
@@ -229,9 +240,67 @@ class MeritOrderAdmission{
 			System.exit(1);
 		}
 		//All merit lists checked
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		//Checked, everything OK till here
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			/****************************************************Start of the MeritOrder Algorithm***************************************************************/
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			/******************************************************************Phase-1***************************************************************************/
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		for (ListIterator<Candidate> current = commonMeritList.listIterator(); current.hasNext(); )
+		{
+			current.next();
+			while(!current.isWaitListedFor() && current.getAppliedUpto()!=-1){
+				if(getProgram(current.currentVirtualProgramme()).checkApplication(current)){
+					getCandidate(current).setWaitListedForBool(true);
+					getCandidate(current).setWaitListedFor(current.currentVirtualProgramme());
+					current.remove();
+				}
+				else{
+					current.nextVirtualProgramme();
+				}
+			}
+		}
+
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			/******************************************************************Dereservation***************************************************************************/
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		for (Map.Entry<String , ArrayList<VirtualProgramme> > entry : programMap.entrySet())
+		{
+			entry.getValue().get(0).dereserveSeats(entry.getValue());
+		}
+
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			/******************************************************************Phase-2***************************************************************************/
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		for (ListIterator<Candidate> current = commonMeritList.listIterator(); current.hasNext(); )
+		{
+			current.next();
+			getCandidate(current).setAppliedUpto(0);
+			while(!current.isWaitListedFor() && current.getAppliedUpto()!=-1){
+				if(getProgram(current.currentVirtualProgramme()).checkApplication(current)){
+					getCandidate(current).setWaitListedForBool(true);
+					getCandidate(current).setWaitListedFor(current.currentVirtualProgramme());
+					current.remove();
+				}
+				else{
+					current.nextVirtualProgramme();
+				}
+			}
+		}
+
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			/******************************************************************Phase-2***************************************************************************/
+		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		printResult();
+	}
 }
