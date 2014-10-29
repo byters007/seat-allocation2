@@ -9,7 +9,7 @@ public class Candidate{
 	private boolean pdStatus;
 	private boolean dsStatus;
 	private boolean nationality;
-	private int rank[8];
+	private int[] rank;
 
 	//Information regarding preferences
 	private ArrayList<VirtualProgramme> preferenceList;
@@ -25,6 +25,10 @@ public class Candidate{
 
 	public String getCategory(){
 		return category;
+	}
+
+	public void setCategory(String x){
+		category=x;
 	}
 
 	public boolean getPDStatus(){
@@ -70,10 +74,14 @@ public class Candidate{
 		return fPreferenceList.get(i);
 	}	
 
-	public void addRank(int x[8]){
+	public void addRank(int[] x){
 		for(int i=0;i<8;i++){
 			rank[i]=x[i];
 		}
+	}
+
+	public int getRank(int index){
+		return rank[index];
 	}
 
 	//Constructor
@@ -88,6 +96,7 @@ public class Candidate{
 		fPreferenceList = new ArrayList<VirtualProgramme>();
 		appliedUpto = 0;
 		isWaitListed = false;
+		rank = new int[8];
 	}
 
 	//Copy Constructor
@@ -103,6 +112,8 @@ public class Candidate{
 		appliedUpto=x.appliedUpto;
 		//waitListedFor = new VirtualProgramme(x.waitListedFor);
 		isWaitListed=x.isWaitListed;
+		addRank(x.rank);
+
 	}
 
 	//Function for adding preferences to the preference list
@@ -110,23 +121,16 @@ public class Candidate{
 		if(category.equals("GE")) { 
 			if(!pdStatus){
 				preferenceList.add(choice.get(0));
-				preferenceList.add(choice.get(1));
-				preferenceList.add(choice.get(4));
-				preferenceList.add(choice.get(5));
 			}
 			else {
 				preferenceList.add(choice.get(0));
 				preferenceList.add(choice.get(4));
-				preferenceList.add(choice.get(1));
-				preferenceList.add(choice.get(5));
 			}
 		}
 		else if(category.equals("OBC")) {
 			if(!pdStatus){
 				preferenceList.add(choice.get(0));
 				preferenceList.add(choice.get(1));
-				preferenceList.add(choice.get(4));
-				preferenceList.add(choice.get(5));
 			}
 			else{
 				preferenceList.add(choice.get(0));
@@ -139,36 +143,24 @@ public class Candidate{
 			if(!pdStatus){
 				preferenceList.add(choice.get(0));
 				preferenceList.add(choice.get(2));
-				preferenceList.add(choice.get(1));
-				preferenceList.add(choice.get(4));
-				preferenceList.add(choice.get(5));
-				preferenceList.add(choice.get(6));
 			}
 			else{
 				preferenceList.add(choice.get(0));
 				preferenceList.add(choice.get(2));
 				preferenceList.add(choice.get(4));
 				preferenceList.add(choice.get(6));
-				preferenceList.add(choice.get(1));
-				preferenceList.add(choice.get(5));
 			}
 		}
 		else if(category.equals("ST")) {
 			if(!pdStatus){
 				preferenceList.add(choice.get(0));
 				preferenceList.add(choice.get(3));
-				preferenceList.add(choice.get(1));
-				preferenceList.add(choice.get(4));
-				preferenceList.add(choice.get(5));
-				preferenceList.add(choice.get(7));
 			}
 			else{
 				preferenceList.add(choice.get(0));
 				preferenceList.add(choice.get(3));
 				preferenceList.add(choice.get(4));
 				preferenceList.add(choice.get(7));
-				preferenceList.add(choice.get(1));
-				preferenceList.add(choice.get(5));
 			}
 		}
 		if(dsStatus){
@@ -177,15 +169,9 @@ public class Candidate{
 		if(!nationality){
 			if(!pdStatus){
 				fPreferenceList.add(choice.get(0));
-				fPreferenceList.add(choice.get(1));
-				fPreferenceList.add(choice.get(4));
-				fPreferenceList.add(choice.get(5));
 			}
 			else{
 				fPreferenceList.add(choice.get(0));
-				fPreferenceList.add(choice.get(4));
-				fPreferenceList.add(choice.get(1));
-				fPreferenceList.add(choice.get(5));
 			}
 		}
 	}

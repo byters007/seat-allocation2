@@ -4,21 +4,24 @@ import java.util.*;
 public class MeritList{
 	
 	//data members
-	private Arraylist<Candidate> rankList;
-	private meritListIndex;
+	private ArrayList<Candidate> rankList;
+	private int meritListIndex;
 	
 	//constructor
 	public MeritList(){
-		rankList = new Arraylist<Candidate>();
+		rankList = new ArrayList<Candidate>();
 	}
 	public MeritList(int index){
-		rankList = new Arraylist<Candidate>();
+		rankList = new ArrayList<Candidate>();
 		meritListIndex = index;
 	}
 
 	//Functions for accessing data members
 	public int getMeritListIndex(){
 		return meritListIndex;
+	}
+	public ArrayList<Candidate> getRankList(){
+		return rankList;
 	}
 
 	//Function for adding candidate
@@ -27,21 +30,24 @@ public class MeritList{
 	}
 
 	//Function for appending lists
-	public appendList(MeritList list){
-		rankList.addAll(list);
+	public void appendList(ArrayList<Candidate> list){
+		for (ListIterator<Candidate> current = list.listIterator(); current.hasNext(); )
+		{
+			addCandidate(current.next());
+		}
 	}
 
 	//Function for sorting lists
-	public sortList(){
+	public void sortList(){
 		Collections.sort(rankList, new Comparator<Candidate>() {
 	        @Override
 	        public int compare(Candidate candidate1, Candidate candidate2)
 	        {
 	        	if(candidate1.getRank(getMeritListIndex()) < candidate2.getRank(getMeritListIndex()))
-	        		return 1;
-	        	else
 	        		return -1;
+	        	else
+	        		return 1;
 	        }
-    	}
+    	});
 	}
 }

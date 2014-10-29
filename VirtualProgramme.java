@@ -14,6 +14,8 @@ public class VirtualProgramme
 	private ArrayList<Candidate> waitListForeign;
 	private ArrayList<Candidate> waitListDS;
 	private ArrayList<Candidate> tempList;
+	//private MeritList meritList;
+
 
 	public VirtualProgramme(VirtualProgramme prog) {
 		programID = prog.programID ;
@@ -27,7 +29,9 @@ public class VirtualProgramme
 		waitListForeign = new ArrayList<Candidate>(prog.waitListForeign) ;
 		waitListDS = new ArrayList<Candidate>(prog.waitListDS) ;
 		tempList = new ArrayList<Candidate>(prog.tempList) ;
+		//meritList = new MeritList(prog.meritList) ;
 	}
+
 	public VirtualProgramme(String category_ , Boolean pdStatus_ , int quota_, String programID_, String instiID_)
 	{
 		category = category_;
@@ -95,9 +99,12 @@ public class VirtualProgramme
 	public String getCategory() {
 		return category ;
 	}
+	public int getMeritListIndex(){
+		return meritListIndex;
+	}
 
 	/** @debug: maybe you can pass tempId(string) ,instead of Candidate*/
-	public void receiveApplication(Candidate newCandidate, HashMap<String , Candidate> rejectionList)	
+	/*public void receiveApplication(Candidate newCandidate, HashMap<String , Candidate> rejectionList)	
 	{	//check if the candidate is present in the merit list, which is available in gale-shapley class.
 		if(meritList.getRank(newCandidate.getUniqueID())!=-1)
 		{
@@ -109,9 +116,27 @@ public class VirtualProgramme
 		}
 		//newCandidate.setAppliedUpto(5);
 
-	}
+	}*/
 
-	public HashMap<String , Candidate> filter(HashMap<String , Candidate> rejectionList)
+	//We can implement treeMap too
+	/*public void SelectionSort ( ArrayList<Candidate> num)
+	{
+	     int i, j, first;
+	     for (i = num.size() - 1; i >= 0; i--)  
+	     { 
+	          first = 0;   //initialize to subscript of first element
+	          for(j = 0; j <= i; j++)   //locate smallest element between positions 0 and i.
+	          {
+	               if( meritList.compareRank(num.get(j), num.get(first),meritListIndex) == 1 )         	//here write the actual name of the hashmap, rank is the 
+	                 first = j;
+	          }
+	          Candidate temp = new Candidate(num.get(first));   //swap smallest found with element in position i.
+	          num.set(first,num.get(i)) ;
+	          num.set(i,temp); 
+	      }
+	}*/
+
+	/*public HashMap<String , Candidate> filter(HashMap<String , Candidate> rejectionList)
 	{
 		SelectionSort(tempList) ;
 		if(quota > 0) {
@@ -173,14 +198,14 @@ public class VirtualProgramme
 
 	public void print_program() {
 		System.out.println(programID + " " + quota + " " + category) ;
-	}
+	}*/
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/**********************************************************Functions for MeritOrder(Specific)******************************************************************/
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		
-	public Boolean checkApplication(Candidate canndidate){
-		if(quota>0){
+	public Boolean checkApplication(Candidate candidate){
+		if(quota>0 && candidate.getRank(meritListIndex)>0){
 			if(seatsFilled<quota){
 				waitList.add(candidate);
 				seatsFilled++;
@@ -193,6 +218,16 @@ public class VirtualProgramme
 			}
 			else
 				return false;
+		}
+		else
+			return false;
+	}
+
+	public Boolean checkFApplication(Candidate candidate){
+		if(waitList.get(waitList.size()-1).getRank(meritListIndex)>=candidate.getRank(meritListIndex)){
+			waitList.add(candidate);
+			seatsFilled++;
+			return true;
 		}
 		else
 			return false;
